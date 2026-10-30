@@ -1,0 +1,4 @@
+interface:
+  display_name: "自由P图"
+  short_description: "先拆解与追问需求，再按预算生成、验收细节并裁切整理，兼容多种主控模型"
+  default_prompt: "使用 $free-photo-edit，根据我的原图与参考图澄清修改范围和生成数量，完成修图并整理交付。"
