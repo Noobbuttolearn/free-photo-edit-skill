@@ -4,11 +4,15 @@
 
 适用于家具替换、局部改色、换装、多图合成和多个明确版本的图片编辑任务。可由 WorkBuddy、Codex 等能读取技能说明、操作文件并调用图片工具的宿主使用。
 
-> 当前为待发布内容；“链接安装”与 GLM-5.3-Flash 的完整修图链路尚未端到端验证。
+> “链接安装”与 GLM-5.3-Flash 的完整修图链路尚未端到端验证。已有脚本和安装说明不等于所有宿主均已实测通过。
 
 采用 [MIT 许可](LICENSE)，允许使用、修改和商用，分发时保留许可声明。
 
-发布规划：GitHub 主仓库 `Noobbuttolearn/free-photo-edit`；Gitee 镜像 `user-zhou/free-photo-edit`。仓库上线并验证后再作为正式下载入口。两个平台发布同一版本与相同校验值；同步约定见 [MIRRORING.md](MIRRORING.md)。
+[GitHub 主仓库](https://github.com/Noobbuttolearn/free-photo-edit-skill) · [Gitee 镜像](https://gitee.com/user-zhou/free-photo-edit-skill)（同步中，以 GitHub 为准）
+
+[下载完整技能 ZIP](free-photo-edit-v2.zip) · [复制 WorkBuddy 安装话术](INSTALL-IN-WORKBUDDY.md) · [SHA-256 校验](SHA256SUMS.txt)
+
+两个平台按相同版本和校验值同步，具体约定见 [MIRRORING.md](MIRRORING.md)。
 
 ## 获取与安装
 
@@ -17,7 +21,7 @@
 ### WorkBuddy 官方导入入口
 
 1. 从 https://www.workbuddy.cn/ 下载并安装 WorkBuddy，完成登录。
-2. 下载本仓库提供的固定版本技能 ZIP。
+2. 下载本仓库提供的 [完整技能 ZIP](free-photo-edit-v2.zip)。
 3. 打开 **专家·技能·连接器 → 技能 → 添加技能 → 上传技能**，选择 ZIP。
 4. 在“已安装”中检查自由 P 图 / free-photo-edit 是否已启用；必要时新建会话后调用。
 5. 先检查当前环境是否具备图片读取、图片编辑工具与所需 Python 依赖，再开始修图。
@@ -58,10 +62,8 @@ Skill 会先明确输入角色、范围和数量，控制生成尝试；默认�
 
 原图保持只读。生成结果的质量、时间、额度和费用取决于所用宿主与图片服务；不保证所有宿主和模型均已通过端到端测试。
 
-## 发布前待办
+## 许可与验证状态
 
-- 填入真实仓库与 Release 地址，替换安装话术占位符。
-- 在目标 WorkBuddy 版本完成 ZIP 导入与网址安装实测，记录实际成功路线。
-- 验证目标模型的图片读取 / 调度、图片工具与 Python 依赖。
 - MIT 许可已由作者确认，根目录和 ZIP 内均保留许可文本。
-- 不将个人照片、任务台账、密钥、账号配置或私有输出打入公开发布包。
+- 网址安装与目标模型的图片读取 / 调度、图片工具和依赖仍需按当前 WorkBuddy 版本实测。
+- 发布包只含技能及许可文件，不含案例照片、任务台账、密钥或账号配置。

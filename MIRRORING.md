@@ -2,12 +2,12 @@
 
 发布架构已由作者确认：GitHub 为主，Gitee 为镜像，采用 MIT 许可。
 
-规划地址（发布前不可当作已上线资源）：
+仓库地址：
 
-- GitHub：`https://github.com/Noobbuttolearn/free-photo-edit`
-- Gitee：`https://gitee.com/user-zhou/free-photo-edit`
+- GitHub：`https://github.com/Noobbuttolearn/free-photo-edit-skill`
+- Gitee：`https://gitee.com/user-zhou/free-photo-edit-skill`
 
-GitHub 是修改与版本发布的来源；Gitee 同步同一 `main` 提交与版本标签。ZIP 本身纳入仓库，两个平台可校验同一个 SHA-256。发布 GitHub Release 时，附上同一个 ZIP 与 `SHA256SUMS.txt`。
+GitHub 是修改与版本发布的来源；Gitee 同步同一 `main` 提交与版本标签。ZIP 本身纳入仓库，两个平台可校验同一个 SHA-256。当前直接从仓库提供 ZIP；若另外创建 GitHub Release，使用相同 ZIP 与 `SHA256SUMS.txt`。
 
 首次发布需使用空的新仓库。作者提供的 `user-zhou/built-casually` 已有麦克纳姆轮小车项目，不作为 Skill 的同步目标；不得用强制推送或整仓镜像覆盖它。
 
