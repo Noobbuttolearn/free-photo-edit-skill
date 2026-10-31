@@ -8,20 +8,33 @@
 
 采用 [MIT 许可](LICENSE)，允许使用、修改和商用，分发时保留许可声明。
 
-[GitHub 主仓库](https://github.com/Noobbuttolearn/free-photo-edit-skill) · [Gitee 镜像](https://gitee.com/user-zhou/free-photo-edit-skill)（同步中，以 GitHub 为准）
+[GitHub 主仓库](https://github.com/Noobbuttolearn/free-photo-edit-skill) · [Gitee 镜像](https://gitee.com/user-zhou/free-photo-edit-skill)
 
-[下载完整技能 ZIP](free-photo-edit-v2.zip) · [复制 WorkBuddy 安装话术](INSTALL-IN-WORKBUDDY.md) · [SHA-256 校验](SHA256SUMS.txt)
+[下载 v2.1.0 完整技能 ZIP](free-photo-edit-v2.1.0.zip) · [复制 WorkBuddy 安装话术](INSTALL-IN-WORKBUDDY.md) · [SHA-256 校验](SHA256SUMS.txt)
 
 两个平台按相同版本和校验值同步，具体约定见 [MIRRORING.md](MIRRORING.md)。
 
+## 当前版本：v2.1.0
+
+WorkBuddy 和 Codex 使用同一份 Skill，按实际执行宿主选择默认出图规则：
+
+| 执行宿主 | 默认底部白边 | 交付 |
+| --- | --- | --- |
+| WorkBuddy | 生成前预留，建议约内容高度的 8%，适配工具支持的画布 | 检查白边与主体边界后，裁掉约定白边 |
+| Codex / 其他宿主 | 0 | 完整画幅，不裁底部 |
+
+用户明确指定的留白要求优先；按宿主判断，不按模型名称判断。v2.1.0 同步这项平台规则，并加入三视图与多机位的规划、主体一致性和验收参考；生成脚本与 v2.0.0 相同。v2.0.0 标签及旧 ZIP 保留，旧版默认所有平台留白。
+
+本仓库及技能 ZIP 只发布 Skill。独立本地网页、服务器、账户支付、会话图片、API 密钥和本机模型配置均不包含在内。
+
 ## 获取与安装
 
-推荐提供固定版本 ZIP。当前 ZIP 文件名为 `free-photo-edit-v2.zip`，内含完整的 `free-photo-edit/` 目录。
+推荐提供固定版本 ZIP。当前 ZIP 文件名为 `free-photo-edit-v2.1.0.zip`，内含完整的 `free-photo-edit/` 目录；固定版本标签为 `v2.1.0`。
 
 ### WorkBuddy 官方导入入口
 
 1. 从 https://www.workbuddy.cn/ 下载并安装 WorkBuddy，完成登录。
-2. 下载本仓库提供的 [完整技能 ZIP](free-photo-edit-v2.zip)。
+2. 下载本仓库提供的 [v2.1.0 完整技能 ZIP](free-photo-edit-v2.1.0.zip)。
 3. 打开 **专家·技能·连接器 → 技能 → 添加技能 → 上传技能**，选择 ZIP。
 4. 在“已安装”中检查自由 P 图 / free-photo-edit 是否已启用；必要时新建会话后调用。
 5. 先检查当前环境是否具备图片读取、图片编辑工具与所需 Python 依赖，再开始修图。
@@ -39,7 +52,9 @@ free-photo-edit/
 ├── SKILL.md
 ├── agents/openai.yaml
 ├── references/execution.md
-└── scripts/photo_edit.py
+├── references/multi-view.md
+├── scripts/photo_edit.py
+└── LICENSE
 ```
 
 不要只复制 SKILL.md，也不要覆盖已经安装且用途未确认的同名版本。
@@ -58,7 +73,7 @@ GLM-5.3-Flash 是 WorkBuddy 内置模型之一；截至 2026-10-30，官方模�
 
 Python 3.9+；台账主要使用标准库。裁切与本地合成需要 Pillow；通过内置 OpenAI 兼容 API 脚本出图时才需要 openai 与相应服务。按实际缺失补装，不要求初学者预先配置全部服务。
 
-Skill 会先明确输入角色、范围和数量，控制生成尝试；默认白边与尺寸需要在生成前确认。局部编辑若要求区域外像素一致，需本地合成与差异检查。完整执行说明见 [references/execution.md](free-photo-edit/references/execution.md)。
+Skill 会先明确输入角色、范围和数量，控制生成尝试；按宿主选择白边默认值，并将实际尺寸与白边写进生成方案。局部编辑若要求区域外像素一致，需本地合成与差异检查。完整执行说明见 [references/execution.md](free-photo-edit/references/execution.md)，三视图任务另见 [references/multi-view.md](free-photo-edit/references/multi-view.md)。
 
 原图保持只读。生成结果的质量、时间、额度和费用取决于所用宿主与图片服务；不保证所有宿主和模型均已通过端到端测试。
 

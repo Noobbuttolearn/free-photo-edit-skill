@@ -16,12 +16,14 @@ GitHub 是修改与版本发布的来源；Gitee 同步同一 `main` 提交与�
 ```sh
 git push origin main
 git push gitee main
-git push origin refs/tags/v2.0.0
-git push gitee refs/tags/v2.0.0
+git push origin refs/tags/v2.1.0
+git push gitee refs/tags/v2.1.0
 ```
 
 如果远端有不相关历史、受保护分支或拒绝快进，应检查差异后处理，不使用 `--force`、`--mirror` 或删除远端引用。
 
 更新流程：只修改主仓库内容 → 检查核心文件与 ZIP → 更新校验文件 → 提交 → 创建新版本标签 → 普通推送两个远端 → 验证双方提交和下载文件一致。
+
+当前发布为 `v2.1.0`，技能包为 `free-photo-edit-v2.1.0.zip`。旧 `v2.0.0` 标签和 `free-photo-edit-v2.zip` 保留原内容；升级时新增版本包，不覆盖历史包。`SHA256SUMS.txt` 同时保留两份 ZIP 的校验值。
 
 镜像地址可以交给国内观众；若未同步完成，应明确标注，不以旧版本冒充最新版本。

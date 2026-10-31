@@ -32,7 +32,7 @@
 }
 ```
 
-`inputs` 必须是存在的文件，避免误把输入放进 scratch。`preservation` 是 `visual` 或 `pixel`。`bottom_padding_px` 必填，使用当前工具实际支持的尺寸；只有用户取消白边时才设为 0。示例尺寸仅用于说明字段，并不意味着每个 API 都支持。`max_generations` 是包括首批、补图、空场景生成在内的总尝试上限；不能小于首批张数。每条 `count` 是合格交付数量，不等于允许无限重生。
+`inputs` 必须是存在的文件，避免误把输入放进 scratch。`preservation` 是 `visual` 或 `pixel`。`bottom_padding_px` 必填：WorkBuddy 默认按受支持尺寸预留约8%内容高的白边；其他执行平台默认 0。用户显式要求优先，以执行宿主而非模型名判断。上例演示启用白边；无白边任务将该值设为0，`final_size` 就是完整画布尺寸。示例尺寸不意味着每个 API 都支持。`max_generations` 包括首批、补图、空场景生成的总尝试上限，不能小于首批张数。每条 `count` 是合格交付数量，不等于允许无限重生。
 
 ```text
 python SKILL_DIR/scripts/photo_edit.py init --id chair-views --plan work/plan.json --work-root work/photo-edit --output-root outputs/photo-edit
@@ -51,11 +51,11 @@ python SKILL_DIR/scripts/photo_edit.py prepare --task work/photo-edit/chair-view
 python SKILL_DIR/scripts/photo_edit.py reserve --task work/photo-edit/chair-views/task.json --variant front --method native --prepared PREPARATION_ID
 ```
 
-`prepare` 返回准备 ID、`prompt_file`、`images`、`mask` 和 `canvas_size`。提示词已自动加入白边布局；`images[0]` 是生成前加白边的底图，其他参考图未改变。向原生生图工具传入该文件里的完整提示词、该 images 列表以及完整 canvas_size；不要回退为用户短句和原始无白边底图。有蒙版可给 `prepare --mask`，只接受匹配未加白边底图的 alpha PNG，脚本会同步扩展并保护白边。
+`prepare` 返回准备 ID、`prompt_file`、`images`、`mask` 和 `canvas_size`。白边大于0时自动加入白边布局，`images[0]` 是生成前加白边的底图；白边0时不添加白条，保留完整内容尺寸。其他参考图不变。向原生工具传入生成的完整提示词、images列表和canvas_size；启用白边时不能退回原始底图。有蒙版可给 `prepare --mask`，接受匹配未加白边底图的 alpha PNG，启用白边时同步扩展并保护白边。
 
 每次调用原生工具前预留一张。`reserve` 返回 attempt ID；有白边却没有有效准备 ID，或准备后的提示词/图像已改变时，脚本拒绝预留。额度或连续失败限制拒绝时也不再调用工具。
 
-给工具一张图的请求，返回后直接登记，脚本会将原始结果复制到 scratch 并立刻验白边。无需先手工复制，也不要在图片生成后额外加白边。
+给工具一张图的请求，返回后直接登记，脚本将原始结果复制到 scratch 并检查画布；仅白边大于0时检查白边。无需先手工复制，也不要在图片生成后额外加白边。
 
 ```text
 python SKILL_DIR/scripts/photo_edit.py record --task work/photo-edit/chair-views/task.json --attempt ATTEMPT_ID --image /path/to/tool-returned.png
@@ -63,7 +63,7 @@ python SKILL_DIR/scripts/photo_edit.py record --task work/photo-edit/chair-views
 
 工具失败：`record --attempt ATTEMPT_ID --failed --reason api-error`。图生成成功但朝向错误等，检查后用 `reject --attempt ATTEMPT_ID --reason wrong-facing`。同一个 variant 最后连续两次被标记相同失败原因时，脚本禁止该 variant 再预留；应改用不生成的新合成方案，或与用户另行明确讨论任务修改。单纯换提示词/模型不算解决原因。
 
-`record` 检测到无白边时返回非零退出码和 `reason: missing-bottom-padding`，将该次尝试标为 failed，保留原始图片；不能忽略错误继续裁切或交付。尺寸不对返回 `wrong-canvas-size`。这次尝试仍然消耗额度，不会自动补图。
+白边大于0的任务，`record` 检测到缺白边时返回非零退出码和 `reason: missing-bottom-padding`，将尝试标为 failed，保留原图；不能忽略错误继续交付。白边0不要求底部为白色。尺寸不对均返回 `wrong-canvas-size`。失败仍消耗额度，不自动补图。
 
 原生工具无法输出单张时，必须事先在台账逐张预留实际会生成的数量。不能只登记要交付的图而隐藏失败输出。
 
@@ -75,7 +75,7 @@ python SKILL_DIR/scripts/photo_edit.py record --task work/photo-edit/chair-views
 python SKILL_DIR/scripts/photo_edit.py api --task work/photo-edit/chair-views/task.json --variant front --model gpt-image-2 --prompt-file work/front-prompt.txt --image /path/to/scene.png --image /path/to/product.jpg --mask /path/to/api-mask.png --size auto --quality high
 ```
 
-无 `--image` 为生成，有 `--image` 为编辑。API 命令自动调用相同的准备步骤，将底图提前加白边、注入具体布局提示词并传入完整画布尺寸。`--size auto` 在启用白边时会解析为任务单的 `W x (H+B)`；显式尺寸不匹配则在调用前报错。接口不支持该尺寸时，应在调用前选择受支持尺寸/工具，不把白边关闭来适配。
+无 `--image` 为生成，有 `--image` 为编辑。API 命令自动准备请求，仅白边大于0时提前加白边和注入白边布局。`--size auto` 在启用白边时解析为 `W x (H+B)`；显式尺寸不匹配则调用前报错。白边0时优先显式传入计划的完整尺寸（如 `--size 1024x1024`），避免接口auto选择不同画布。接口不支持已确认尺寸时，调用前选择受支持尺寸/工具，不擅改已确认白边。
 
 API 蒙版是带 alpha 的 PNG，透明区允许改动；本地交付合成的 edit-mask 则是灰度白色允许编辑、黑色保留。二者方向不同，不能直接混用。传给 API 命令的 mask 必须匹配未加白边第一张图尺寸，并实际有透明区域；脚本同步扩展。某模型不支持的 size/quality/mask 根据服务商错误处理，不在失败后偷偷切模型或重发。
 
@@ -83,7 +83,7 @@ API 蒙版是带 alpha 的 PNG，透明区允许改动；本地交付合成的 e
 
 ## 3. 看图、裁白边与交付
 
-可以独立运行 `python SKILL_DIR/scripts/photo_edit.py check --task work/photo-edit/chair-views/task.json --image /path/to/result.png`；无白边或尺寸错误返回非零退出码。
+可以独立运行 `python SKILL_DIR/scripts/photo_edit.py check --task work/photo-edit/chair-views/task.json --image /path/to/result.png`；尺寸错误或已启用白边却缺失时返回非零退出码。
 
 先实际检查生成图，合格才运行 `deliver`。`deliver` 要求 `--reviewed` 表示已经看过；脚本本身不具备视觉判断能力，不能把该开关当成免检。
 
@@ -91,7 +91,7 @@ API 蒙版是带 alpha 的 PNG，透明区允许改动；本地交付合成的 e
 python SKILL_DIR/scripts/photo_edit.py deliver --task work/photo-edit/chair-views/task.json --variant front --candidate work/photo-edit/chair-views/scratch/ATTEMPT_ID.png --attempt ATTEMPT_ID --reviewed
 ```
 
-根据计划要求检查 `W × (H+B)`，白边至少 90% 接近白色才允许裁切。白边高固定为已确认的 B，不能自动加大，也不能单靠白色比例声称主体没被剪。输出一律 PNG。
+根据计划检查 `W × (H+B)`。`B=0` 时完整交付 `W × H`，不检查白色占比、不裁掉底部；`B>0` 时白边至少90%接近白色才允许裁切。白边高固定为已确认的B，不能自动加大，也不能单靠白色比例声称主体没被剪。输出一律PNG。
 
 保留模式是 pixel 时，需要原图与编辑区蒙版：
 
